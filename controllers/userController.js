@@ -1,29 +1,42 @@
 const { dataUser } = require('../dbContent/users/user');
+const { mapError } = require('../helper/handleError');
 
 const getUser = async (req, res) => {
-    const userId = req.query.id;
-    const userResponse = dataUser.filter(user => user.id === Number(userId));
-    res.status(200).send(userResponse[0]);
+    try {
+        const userId = req.query.id;
+        const isUser = checkIfUserExists(userId);
+        if (isUser) throw new Error('NOT_FOUND');
+        const userResponse = dataUser.filter(user => user.id === Number(userId));
+        res.status(200).send(userResponse[0]);
+    } catch (e) {
+        res.status(400).json(mapError[e.message])
+    }
 };
 
 const createUser = async (req, res) => {
-    const newDataUsers = [...dataUser, req.body];
-    res.send(newDataUsers);
+    try {
+        const userId = req.body.id;
+        const isUser = checkIfUserExists(userId);
+        if (!isUser) throw new Error('RESOURCE_ALREADY_EXISTS');
+        const newDataUsers = [...dataUser, req.body];
+        res.send(newDataUsers);
+    } catch (e) {
+        res.status(500).json(mapError[e.message])
+    }
 };
-
 
 const updateUser = async (req, res) => {
     try {
         const id = req.body.id;
         const isUser = checkIfUserExists(id);
-        if (isUser) throw new Error('Resource not found.')
+        if (isUser) throw new Error('NOT_FOUND')
         const user = updateUserInfo(req.body);
         const oldUsers = dataUser.filter(item => item.id !== id);
         const newUsers = [...oldUsers, user];
         res.status(200).json(newUsers);
-    } catch (error) {
-        console.log(error);
-        res.status(404).send(error.message);
+    } catch (e) {
+        console.log(e);
+        res.status(400).send(mapError[e.message]);
     }
 };
 
@@ -55,8 +68,8 @@ const updateUserInfo = ({ id, name, birthDate }) => {
 
 const checkIfUserExists = (id) => {
     const user = dataUser.filter(item => item.id === id);
-    return !user.length > 0;
-}
+    return !(user.length > 0);
+};
 
 
 
