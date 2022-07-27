@@ -11,6 +11,5 @@ app.listen(8080, () => {
     console.log('Server up...')
 });
 
-
 app.use('/api', userRouter);
 app.use('/api/products', productRouter);
