@@ -67,7 +67,7 @@ const updateUserInfo = ({ id, name, birthDate }) => {
 };
 
 const checkIfUserExists = (id) => {
-    const user = dataUser.filter(item => item.id === id);
+    const user = dataUser.filter(item => item.id === Number(id));
     return !(user.length > 0);
 };
 
