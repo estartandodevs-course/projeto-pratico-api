@@ -27,6 +27,20 @@ const updateUser = async (req, res) => {
     }
 };
 
+const deleteUser = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const isUser = checkIfUserExists(id);
+        if (isUser) throw new Error('NOT_FOUND');
+        dataUser.filter(item => item.id !== Number(id));
+        res.status(204).json();
+    } catch (e) {
+        const stackError = mapError[e.message];
+        res.status(404).json(stackError);
+    }
+}
+
+
 // Private functions
 
 const updateUserInfo = ({ id, name, birthDate }) => {
@@ -50,4 +64,5 @@ module.exports = {
     getUser,
     createUser,
     updateUser,
+    deleteUser
 }
